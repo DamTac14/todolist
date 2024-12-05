@@ -1,73 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import TodoItem from './TodoItem';
-import './TodoList.css';
+import React, { useState } from "react";
+import TaskCounter from "./TaskCounter";
 
-function readFromLocaleStorage() {
-  const todos = localStorage.getItem('todos');
-  console.log(todos)
-  return todos ? JSON.parse(todos) : [];
-}
+const TodoList = () => {
+    const [tasks, setTasks] = useState([
+        { id: 1, text: "Learn React", completed: false },
+        { id: 2, text: "Build a todo app", completed: true },
+    ]);
 
-function writeToLocaleStorage(todos) {
-  localStorage.setItem('todos', JSON.stringify(todos));
-}
+    const remainingTasks = tasks.filter(task => !task.completed).length;
 
-function TodoList() {
-  const [todos, setTodos] = useState(readFromLocaleStorage());
-  const [inputValue, setInputValue] = useState('');
 
-  useEffect(() => writeToLocaleStorage(todos), [todos])
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (inputValue.trim() !== '') {
-      setTodos([...todos, { id: Date.now(), text: inputValue, completed: false }]);
-      setInputValue('');
-    }
-  };
-
-  const toggleTodo = (id) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
+    return (
+        <div>
+            <TaskCounter remainingTasks={remainingTasks} />
+            <ul>
+                {filteredTasks.map(task => (
+                    <li key={task.id}>
+                        <input
+                            type="checkbox"
+                            checked={task.completed}
+                            onChange={() =>
+                                setTasks(tasks.map(t =>
+                                    t.id === task.id ? { ...t, completed: !t.completed } : t
+                                ))
+                            }
+                        />
+                        {task.text}
+                    </li>
+                ))}
+            </ul>
+        </div>
     );
-  };
-
-  const deleteTodo = (id) => {
-    setTodos(todos.filter((todo) => todo.id !== id));
-  };
-
-  return (
-    <div className="todo-list">
-      <form className="todo-list-form" onSubmit={handleSubmit}>
-        <input
-          className="todo-list-input"
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          placeholder="What needs to be done?"
-        />
-        <button className="todo-list-submit" type="submit">Add</button>
-      </form>
-      <ul className="todo-list-items">
-        {todos.length === 0 ? (
-          <li className="todo-list-empty">
-            No todos yet! Add one to get started.
-          </li>
-        ) : (
-          todos.map((todo) => (
-            <TodoItem
-              key={todo.id}
-              todo={todo}
-              onToggle={toggleTodo}
-              onDelete={deleteTodo}
-            />
-          ))
-        )}
-      </ul>
-    </div>
-  );
-}
+};
 
 export default TodoList;
