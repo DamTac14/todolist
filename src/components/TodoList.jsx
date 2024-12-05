@@ -34,6 +34,10 @@ const TodoList = () => {
                             }
                         />
                         {task.text}
+                        <button onClick={() => setTasks(tasks.filter(task => !task.completed))}>
+                            Clear Completed
+                        </button>
+
                     </li>
                 ))}
             </ul>
